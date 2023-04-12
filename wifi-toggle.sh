@@ -1,14 +1,27 @@
 #!/bin/bash
 
+################################################################################
+# Title: Wi-Fi Toggle Launch Daemon
+# Description: This script creates a Launch Daemon and a script that checks for 
+#              wired Ethernet connections and turns off Wi-Fi if a wired connection
+#              is found. 
+# Usage: This script is intended to be run as root from Jamf.
+################################################################################
+
+
 # Define variables
 PLIST_FILE="com.wifi-toggle.plist"
 PLIST_PATH="/Library/LaunchDaemons/$PLIST_FILE"
 DAEMON_NAME="wifi-toggle"
 LOG_FILE="/var/log/wifi-toggle/wifi-toggle.log"
 
-
-# Create the LaunchDaemon plist file
-cat > "$PLIST_PATH" << EOF
+# Check to confirm the Launch Daemon exists and if not, create it
+if [[ -e "$PLIST_PATH" ]]; then
+  echo "Launch Daemon already exists."
+else
+  echo "Launch Daemon does not exist.  Creating it now."
+  # Create the LaunchDaemon plist file
+  cat > "$PLIST_PATH" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -37,12 +50,17 @@ cat > "$PLIST_PATH" << EOF
 </plist>
 EOF
 
-Set the ownership and permissions on the LaunchDaemon plist file
-chown root:wheel "$PLIST_PATH"
-chmod 644 "$PLIST_PATH"
+    # Set the ownership and permissions on the LaunchDaemon plist file
+    chown root:wheel "$PLIST_PATH"
+    chmod 644 "$PLIST_PATH"
 
-Load the LaunchDaemon
-launchctl load "$PLIST_PATH"
+    # Load the LaunchDaemon
+    launchctl load "$PLIST_PATH"
+fi
+
+
+
+
 
 ####
 
