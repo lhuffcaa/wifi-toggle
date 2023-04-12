@@ -58,10 +58,6 @@ EOF
     launchctl load "$PLIST_PATH"
 fi
 
-
-
-
-
 ####
 
 # Create the script file
